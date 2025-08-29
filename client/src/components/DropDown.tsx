@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import CoursesContext from "@/context/ContextProvider";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +10,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "./ui/button";
 
+interface DropDownProps {
+  course: {
+    _id: string;
+    isActive: boolean;
+  };
+}
+
 export default function DropDown({ course }) {
+  const { handleUpdateStatus } = useContext(CoursesContext);
+
+  const handleStatusChange = (newStatus: boolean) => {
+    handleUpdateStatus(course._id, newStatus);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -25,8 +40,12 @@ export default function DropDown({ course }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="start">
         <DropdownMenuGroup>
-          <DropdownMenuItem>Active</DropdownMenuItem>
-          <DropdownMenuItem>Archived</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleStatusChange(true)}>
+            Active
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleStatusChange(false)}>
+            Archived
+          </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
