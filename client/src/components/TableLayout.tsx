@@ -1,3 +1,6 @@
+import { useContext, useState } from "react";
+import CoursesContext from "@/context/ContextProvider";
+
 import {
   Table,
   TableBody,
@@ -6,25 +9,38 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card } from "@/components/ui/card";
-import { BookOpen, Pen, Trash2Icon } from "lucide-react";
-import ActionButton from "./ActionButton";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "./ui/button";
-import { useContext } from "react";
-import CoursesContext from "@/context/ContextProvider";
-import DropDown from "./DropDown";
 
-export function TableDemo() {
+import { Card } from "@/components/ui/card";
+import { Button } from "./ui/button";
+import { BookOpen, Pen, Trash2Icon } from "lucide-react";
+
+import ActionButton from "./ActionButton";
+import DropDown from "./DropDown";
+import { DeleteModal } from "./DeleteModal";
+
+export function TableLayout() {
   const { courses, handleDeleteCourse, handleUpdateCourse } =
     useContext(CoursesContext);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+
+  const confirmDelete = (courseId: string) => {
+    setSelectedCourseId(courseId);
+    setModalOpen(true);
+  };
+
+  const handleConfirm = () => {
+    if (selectedCourseId) handleDeleteCourse(selectedCourseId);
+
+    setModalOpen(false);
+    setSelectedCourseId(null);
+  };
+
+  const handleCancel = () => {
+    setModalOpen(false);
+    setSelectedCourseId(null);
+  };
 
   return (
     <>
@@ -60,7 +76,6 @@ export function TableDemo() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {/* To come from api */}
             {courses.map((course, _idx) => (
               <TableRow
                 key={course._id}
@@ -76,26 +91,6 @@ export function TableDemo() {
                 <TableCell className="text-center">{course.lessons}</TableCell>
                 <TableCell>
                   <DropDown course={course} />
-                  {/* <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant={course.isActive ? "default" : "secondary"}
-                        className={
-                          course.isActive
-                            ? "bg-primary/10 text-primary hover:bg-primary/20"
-                            : "bg-muted text-muted-foreground"
-                        }
-                      >
-                        {course.isActive ? "Active" : "Archived"}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="start">
-                      <DropdownMenuGroup>
-                        <DropdownMenuItem>Active</DropdownMenuItem>
-                        <DropdownMenuItem>Archived</DropdownMenuItem>
-                      </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                  </DropdownMenu> */}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {course.dateAdded}
@@ -107,13 +102,10 @@ export function TableDemo() {
                 </TableCell>
                 <TableCell>
                   <div className="rounded-full w-fit flex gap-2">
-                    <Pen
-                      className="h-5 w-6 text-primary cursor-pointer"
-                      onClick={() => console.log("clicking")}
-                    />
+                    <Pen className="h-5 w-6 text-primary cursor-pointer" />
                     <Trash2Icon
                       className="h-5 w-6 text-primary cursor-pointer"
-                      onClick={() => handleDeleteCourse(course._id)}
+                      onClick={() => confirmDelete(course._id)}
                     />
                   </div>
                 </TableCell>
@@ -122,6 +114,12 @@ export function TableDemo() {
           </TableBody>
         </Table>
       </Card>
+
+      <DeleteModal
+        isOpen={modalOpen}
+        onCancel={handleCancel}
+        onConfirm={handleConfirm}
+      />
     </>
   );
 }
