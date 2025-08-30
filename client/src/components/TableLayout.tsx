@@ -18,6 +18,7 @@ import ActionButton from "./ActionButton";
 import DropDown from "./DropDown";
 import { DeleteModal } from "./DeleteModal";
 import { EditCourseModal } from "./EditCourseModal";
+import { formatDate } from "@/utils/helpers";
 
 export function TableLayout() {
   const { courses, handleDeleteCourse, handleUpdateCourse } =
@@ -127,7 +128,7 @@ export function TableLayout() {
                   <DropDown course={course} />
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {course.dateAdded}
+                  {formatDate(course.dateAdded)}
                 </TableCell>
                 <TableCell>
                   <div className="bg-primary/10 p-1 rounded-full w-fit">
