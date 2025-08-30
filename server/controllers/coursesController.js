@@ -9,12 +9,21 @@ async function updateCourse(req, res) {
   const { id } = req.params;
 
   try {
+    console.log("updating course with id:", id);
+    console.log("requrest body: ", req.body);
     const updatedCourse = await findCourseByIdAndUpdate(id, { $set: req.body });
 
     if (!updatedCourse)
       return res.status(404).json({ error: "Course not found" });
 
-    res.status(200).json(updatedCourse);
+    res.status(200).json({
+      id: updatedCourse._id,
+      name: updatedCourse.name,
+      description: updatedCourse.description,
+      lessons: updatedCourse.lessons,
+      isActive: updatedCourse.isActive,
+      image: updatedCourse.image,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });

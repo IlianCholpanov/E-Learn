@@ -17,29 +17,63 @@ import { BookOpen, Pen, Trash2Icon } from "lucide-react";
 import ActionButton from "./ActionButton";
 import DropDown from "./DropDown";
 import { DeleteModal } from "./DeleteModal";
+import { EditCourseModal } from "./EditCourseModal";
 
 export function TableLayout() {
   const { courses, handleDeleteCourse, handleUpdateCourse } =
     useContext(CoursesContext);
 
-  const [modalOpen, setModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<{
+    id: string;
+    name: string;
+    description: string;
+    lessons: number;
+  } | null>(null);
 
   const confirmDelete = (courseId: string) => {
     setSelectedCourseId(courseId);
-    setModalOpen(true);
+    setDeleteModalOpen(true);
   };
 
-  const handleConfirm = () => {
+  const handleConfirmDelete = () => {
     if (selectedCourseId) handleDeleteCourse(selectedCourseId);
 
-    setModalOpen(false);
+    setDeleteModalOpen(false);
     setSelectedCourseId(null);
   };
 
-  const handleCancel = () => {
-    setModalOpen(false);
+  const handleCancelDelete = () => {
+    setDeleteModalOpen(false);
     setSelectedCourseId(null);
+  };
+
+  const handleEdit = (course: {
+    id: string;
+    name: string;
+    description: string;
+    lessons: number;
+  }) => {
+    setSelectedCourse(course);
+    setEditModalOpen(true);
+  };
+
+  const handleConfirmEdit = (updatedCourse: {
+    id: string;
+    name: string;
+    description: string;
+    lessons: number;
+  }) => {
+    handleUpdateCourse(updatedCourse);
+    setEditModalOpen(false);
+    setSelectedCourse(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditModalOpen(false);
+    setSelectedCourse(null);
   };
 
   return (
@@ -78,7 +112,7 @@ export function TableLayout() {
           <TableBody>
             {courses.map((course, _idx) => (
               <TableRow
-                key={course._id}
+                key={course._id || course?.id}
                 className="hover:bg-muted/30 transition-colors"
               >
                 <TableCell className="font-medium">{_idx + 1}</TableCell>
@@ -102,7 +136,16 @@ export function TableLayout() {
                 </TableCell>
                 <TableCell>
                   <div className="rounded-full w-fit flex gap-2">
-                    <Pen className="h-5 w-6 text-primary cursor-pointer" />
+                    <Pen
+                      className="h-5 w-6 text-primary cursor-pointer"
+                      onClick={() =>
+                        handleEdit({
+                          id: course._id,
+                          name: course.name,
+                          description: course.description,
+                        })
+                      }
+                    />
                     <Trash2Icon
                       className="h-5 w-6 text-primary cursor-pointer"
                       onClick={() => confirmDelete(course._id)}
@@ -116,9 +159,16 @@ export function TableLayout() {
       </Card>
 
       <DeleteModal
-        isOpen={modalOpen}
-        onCancel={handleCancel}
-        onConfirm={handleConfirm}
+        isOpen={deleteModalOpen}
+        onCancel={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+      />
+
+      <EditCourseModal
+        isOpen={editModalOpen}
+        onCancel={handleCancelEdit}
+        onConfirm={handleConfirmEdit}
+        course={selectedCourse}
       />
     </>
   );

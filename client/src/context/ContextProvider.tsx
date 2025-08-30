@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import axios from "axios";
+import { toast } from "sonner";
 
 interface Course {
   id: string;
@@ -54,20 +55,28 @@ export const CoursesProvider: React.FC<CoursesProviderProps> = ({
       setCourses((prev) =>
         prev.map((c) => (c._id === id ? { ...c, isActive: newStatus } : c))
       );
+      toast.success("Status successfully updated!");
     } catch (error) {
+      toast.error("Status could not be updated");
       console.error("Error updating course status:", error);
     }
   };
-
   const handleUpdateCourse = async (updatedCourse: Course) => {
     try {
-      await axios.patch(`http://localhost:3000/courses/${id}`);
+      const response = await axios.patch(
+        `http://localhost:3000/courses/${updatedCourse.id}`,
+        updatedCourse
+      );
+
       setCourses((prevCourses) =>
         prevCourses.map((course) =>
-          course._id === updatedCourse._id ? updatedCourse : course
+          course._id === updatedCourse.id ? response.data : course
         )
       );
+
+      toast.success("Course has been updated!");
     } catch (error) {
+      toast.error("Course could not be updated");
       console.error("Error updating course:", error);
     }
   };
@@ -75,9 +84,10 @@ export const CoursesProvider: React.FC<CoursesProviderProps> = ({
   const handleDeleteCourse = async (id: string) => {
     try {
       await axios.delete(`http://localhost:3000/courses/${id}`);
-      // await axios.delete(`${API_URL}/${id}`);
       setCourses(courses.filter((c) => c._id !== id));
+      toast.success("Course has been deleted!");
     } catch (error) {
+      toast.error("Course could not be deleted");
       console.error("Error deleting course:", error);
     }
   };
