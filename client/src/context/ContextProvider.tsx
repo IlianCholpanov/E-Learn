@@ -70,7 +70,9 @@ export const CoursesProvider: React.FC<CoursesProviderProps> = ({
 
       setCourses((prevCourses) =>
         prevCourses.map((course) =>
-          course._id === updatedCourse.id ? response.data : course
+          course._id === updatedCourse.id
+            ? { ...course, ...updatedCourse }
+            : course
         )
       );
 

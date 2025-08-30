@@ -56,7 +56,15 @@ export function TableLayout() {
     name: string;
     description: string;
     lessons: number;
+    dateAdded?: string;
   }) => {
+    if (selectedCourse) {
+      const mergedCourse = {
+        ...selectedCourse,
+        ...updatedCourse,
+      };
+      handleUpdateCourse(mergedCourse);
+    }
     setSelectedCourse(course);
     setEditModalOpen(true);
   };
@@ -132,7 +140,15 @@ export function TableLayout() {
                 </TableCell>
                 <TableCell>
                   <div className="bg-primary/10 p-1 rounded-full w-fit">
-                    <BookOpen className="h-5 w-6 text-primary" />
+                    {course.image.includes("https") ? (
+                      <img
+                        src={course.image}
+                        alt="course"
+                        className="h-5 w-6"
+                      />
+                    ) : (
+                      <BookOpen className="h-5 w-6 text-primary" />
+                    )}
                   </div>
                 </TableCell>
                 <TableCell>
@@ -144,6 +160,7 @@ export function TableLayout() {
                           id: course._id,
                           name: course.name,
                           description: course.description,
+                          dateAdded: course.dateAdded,
                         })
                       }
                     />

@@ -1,8 +1,9 @@
-export function formatDate(dateStr) {
-  return new Intl.DateTimeFormat("en", {
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(dateStr));
+export function formatDate(dateStr: string | null | undefined) {
+  if (!dateStr) return;
+
+  const date = new Date(dateStr);
+
+  if (isNaN(date.getTime())) return;
+
+  return date.toLocaleDateString();
 }
