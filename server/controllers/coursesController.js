@@ -9,8 +9,6 @@ async function updateCourse(req, res) {
   const { id } = req.params;
 
   try {
-    console.log("updating course with id:", id);
-    console.log("requrest body: ", req.body);
     const updatedCourse = await findCourseByIdAndUpdate(id, { $set: req.body });
 
     if (!updatedCourse)

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,44 +13,47 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import CoursesContext from "@/context/ContextProvider";
 
-interface EditCourseModalProps {
+interface AddCourseModalProps {
   isOpen: boolean;
   onCancel: () => void;
-  onConfirm: (updatedCourse: {
+  onConfirm: (newCourse: {
     id: string;
     name: string;
     description: string;
     lessons: number;
+    isActive: boolean;
+    image: string;
   }) => void;
   course: {
     id: string;
     name: string;
     description: string;
     lessons: number;
+    isActive: boolean;
+    image: string;
   } | null;
 }
 
-export function EditCourseModal({
+export function AddCourseModal({
   isOpen,
   onCancel,
   onConfirm,
   course,
-}: EditCourseModalProps) {
-  const selectedCourse = useContext(CoursesContext);
-
+}: AddCourseModalProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [lessons, setLessons] = useState(0);
+  const [status, setStatus] = useState(true);
+  const [avatar, setAvatar] = useState("");
 
   useEffect(() => {
-    if (isOpen && course) {
+    if (course) {
       setName(course.name);
       setDescription(course.description);
-      setLessons(course.lessons || 0);
+      setLessons(course.lessons);
     }
-  }, [isOpen, course]);
+  }, [course]);
 
   const handleConfirm = () => {
     if (course) {
@@ -62,7 +65,7 @@ export function EditCourseModal({
     <Dialog open={isOpen} onOpenChange={onCancel}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Course</DialogTitle>
+          <DialogTitle>Add Course</DialogTitle>
           <DialogDescription>
             Make changes to your profile here. Click save when you&apos;re done.
           </DialogDescription>

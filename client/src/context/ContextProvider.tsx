@@ -15,6 +15,7 @@ interface CoursesContextType {
   courses: Course[];
   handleDeleteCourse: (id: string) => Promise<void>;
   handleUpdateCourse: (updatedCourse: Course) => Promise<void>;
+  handleAddCourse: (newCourse: Course) => Promise<void>;
   handleUpdateStatus: (id: string, newStatus: boolean) => Promise<void>;
 }
 
@@ -22,6 +23,7 @@ export const CoursesContext = createContext<CoursesContextType>({
   courses: [],
   handleDeleteCourse: async () => {},
   handleUpdateCourse: async () => {},
+  handleAddCourse: async () => {},
   handleUpdateStatus: async () => {},
 });
 
@@ -47,20 +49,23 @@ export const CoursesProvider: React.FC<CoursesProviderProps> = ({
     fetchCourses();
   }, []);
 
-  const handleUpdateStatus = async (id: string, newStatus: boolean) => {
+  const handleAddCourse = async (newCourse: Course) => {
     try {
-      await axios.patch(`http://localhost:3000/courses/${id}`, {
-        isActive: newStatus,
-      });
-      setCourses((prev) =>
-        prev.map((c) => (c._id === id ? { ...c, isActive: newStatus } : c))
+      const response = await axios.post(
+        "http://localhost:3000/courses",
+        newCourse
       );
-      toast.success("Status successfully updated!");
+
+      console.log(reposnse.data);
+
+      toast.success("Course has been added!");
+      setCourses({ ...courses, newCourse });
     } catch (error) {
-      toast.error("Status could not be updated");
-      console.error("Error updating course status:", error);
+      toast.succes("Course could not be added");
+      console.error("Could not add new course:", error.message);
     }
   };
+
   const handleUpdateCourse = async (updatedCourse: Course) => {
     try {
       const response = await axios.patch(
@@ -83,6 +88,21 @@ export const CoursesProvider: React.FC<CoursesProviderProps> = ({
     }
   };
 
+  const handleUpdateStatus = async (id: string, newStatus: boolean) => {
+    try {
+      await axios.patch(`http://localhost:3000/courses/${id}`, {
+        isActive: newStatus,
+      });
+      setCourses((prev) =>
+        prev.map((c) => (c._id === id ? { ...c, isActive: newStatus } : c))
+      );
+      toast.success("Status successfully updated!");
+    } catch (error) {
+      toast.error("Status could not be updated");
+      console.error("Error updating course status:", error.message);
+    }
+  };
+
   const handleDeleteCourse = async (id: string) => {
     try {
       await axios.delete(`http://localhost:3000/courses/${id}`);
@@ -90,7 +110,7 @@ export const CoursesProvider: React.FC<CoursesProviderProps> = ({
       toast.success("Course has been deleted!");
     } catch (error) {
       toast.error("Course could not be deleted");
-      console.error("Error deleting course:", error);
+      console.error("Error deleting course:", error.message);
     }
   };
 
@@ -100,6 +120,7 @@ export const CoursesProvider: React.FC<CoursesProviderProps> = ({
         courses,
         handleDeleteCourse,
         handleUpdateCourse,
+        handleAddCourse,
         handleUpdateStatus,
       }}
     >
