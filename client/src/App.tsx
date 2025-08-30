@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import LearningsPage from "./pages/LearningsPage";
 import { CoursesProvider } from "./context/ContextProvider";
 import AppLayout from "./components/AppLayout";
+import { Toaster } from "sonner";
 
 export default function LearningDashboard() {
   return (
@@ -15,6 +16,8 @@ export default function LearningDashboard() {
             <Route path="/learning" element={<LearningsPage />} />
           </Route>
         </Routes>
+
+        <Toaster position="top-center" />
       </div>
     </CoursesProvider>
   );
